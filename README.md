@@ -1,4 +1,4 @@
- **SensiTalk: Your Magical Communication Bridge**
+ **SensiTalk: Your Magical Communication Bridge**[ THIS  PROJECT IS PART OF HACKTHON - THEME HARRY POTTER]
 
 **1. Project Overview:**
 SensiTalk is an innovative AI-powered communication platform designed to bridge the profound gap for deaf, autistic, and non-verbal communities. It's our 'magic spell' for the unspoken, translating gestures and speech to ensure everyone has the fundamental right to be understood.
