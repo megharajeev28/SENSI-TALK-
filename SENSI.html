@@ -1,0 +1,790 @@
+import React, { useState, useEffect, useRef } from 'react';
+
+// Main App component
+const App = () => {
+  const [activeTab, setActiveTab] = useState('gestureToSpeech'); // 'gestureToSpeech' or 'speechToText'
+
+  return (
+    <div className="min-h-screen bg-cover bg-center bg-fixed font-inter text-white flex flex-col items-center p-4 relative"
+         style={{ backgroundImage: "url('https://images8.alphacoders.com/110/1102284.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
+      <style>
+        {`
+          @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
+          .font-cinzel { font-family: 'Cinzel', serif; }
+          .font-inter { font-family: 'Inter', sans-serif; }
+          /* Custom scrollbar for better aesthetics */
+          ::-webkit-scrollbar {
+              width: 8px;
+          }
+          ::-webkit-scrollbar-track {
+              background: #0a0a2a; /* Dark blue */
+              border-radius: 10px;
+          }
+          ::-webkit-scrollbar-thumb {
+              background: #1a2a5a; /* Lighter blue */
+              border-radius: 10px;
+          }
+          ::-webkit-scrollbar-thumb:hover {
+              background: #2a3a7a; /* Even lighter blue on hover */
+          }
+          .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); /* Dark overlay for readability */
+            z-index: 0;
+          }
+        `}
+      </style>
+
+      <div className="overlay"></div> {/* Background overlay */}
+
+      <div className="relative z-10 w-full flex flex-col items-center"> {/* Content wrapper */}
+        {/* Top Navigation Bar */}
+        <nav className="w-full max-w-6xl flex flex-col md:flex-row justify-between items-center py-4 px-8 bg-blue-950 bg-opacity-70 rounded-full shadow-xl mb-8 animate-fade-in-down">
+          <h1 className="text-4xl font-cinzel text-yellow-300 drop-shadow-lg mb-4 md:mb-0">SENSI TALK</h1>
+          <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-6 text-lg font-semibold text-center md:text-left">
+            <a href="#home" className="text-gray-200 hover:text-yellow-300 transition-colors duration-300">HOME</a>
+            <a href="#about" className="text-gray-200 hover:text-yellow-300 transition-colors duration-300">ABOUT</a>
+            <a href="#features" className="text-gray-200 hover:text-yellow-300 transition-colors duration-300">FEATURES</a>
+            {/* Removed SPELL CASTING option */}
+            <a href="#contact" className="text-gray-200 hover:text-yellow-300 transition-colors duration-300">CONTACT</a>
+          </div>
+        </nav>
+
+        {/* Hero Section */}
+        <section id="home" className="w-full max-w-5xl text-center mb-12 py-16 bg-blue-950 bg-opacity-70 rounded-xl shadow-2xl border border-yellow-600 animate-fade-in">
+            <h2 className="text-5xl font-cinzel text-yellow-300 drop-shadow-lg mb-4">
+                WELCOME TO THE MAGICAL REALM OF SENSI TALK
+            </h2>
+            <p className="text-xl text-gray-200 max-w-3xl mx-auto mb-8 leading-relaxed">
+                UNLOCKING THE SECRETS OF CONNECTION: ONE SPELLBINDING CONVERSATION AT A TIME. PREPARE FOR AN ENCHANTING JOURNEY WHERE WORDS WEAVE WONDERS AND IDEAS TAKE FLIGHT.
+            </p>
+            <button className="magic-button px-10 py-4 text-xl">
+                BEGIN YOUR ADVENTURE
+            </button>
+        </section>
+
+        {/* About SensiTalk Section */}
+        <section id="about" className="w-full max-w-4xl bg-blue-900 bg-opacity-80 rounded-xl shadow-2xl p-8 border-2 border-yellow-700 mt-12 animate-fade-in">
+            <h2 className="text-3xl font-cinzel text-yellow-300 text-center mb-6">
+                <i className="fas fa-book-open mr-3"></i> ABOUT SENSITALK
+            </h2>
+            <p className="text-lg text-gray-200 leading-relaxed mb-4">
+                At its heart, SensiTalk is an innovative AI-powered communication platform designed to bridge
+                the profound, often silent, gap faced by deaf and autistic communities, and anyone who
+                communicates non-verbally. While Google Assistant connects spoken languages,
+            </p>
+            <p className="text-xl font-cinzel text-yellow-300 text-center italic mb-4">
+                “SensiTalk is our 'magic spell' for the unspoken”.
+            </p>
+            <p className="text-lg text-gray-200 leading-relaxed">
+                It's about recognizing and translating the rich, intricate language of human expression –
+                the gestures, the facial cues, the subtle nuances that often go unheard.
+                More than just an app, SensiTalk is a commitment to empathy in action, ensuring every
+                individual has the fundamental right to be understood.
+            </p>
+        </section>
+
+        {/* Features Section */}
+        <section id="features" className="w-full max-w-4xl bg-blue-900 bg-opacity-80 rounded-xl shadow-2xl p-8 border-2 border-yellow-700 mt-12 animate-fade-in">
+            <h2 className="text-3xl font-cinzel text-yellow-300 text-center mb-6">
+                <i className="fas fa-hat-wizard mr-3"></i> OUR FEATURES
+            </h2>
+            <div className="grid md:grid-cols-2 gap-8">
+                <div className="bg-blue-700 bg-opacity-60 p-6 rounded-lg shadow-inner border border-blue-600">
+                    <h3 className="text-2xl font-cinzel text-yellow-300 mb-2">Real-time Interpretation</h3>
+                    <p className="text-gray-200">
+                        Instantly translates complex facial expressions and hand gestures into understandable
+                        emotions and intentions, breaking down immediate barriers.
+                    </p>
+                </div>
+                <div className="bg-blue-700 bg-opacity-60 p-6 rounded-lg shadow-inner border border-blue-600">
+                    <h3 className="text-2xl font-cinzel text-yellow-300 mb-2">Two-Way Communication</h3>
+                    <p className="text-gray-200">
+                        Enables not just understanding non-verbal cues, but also generating
+                        non-verbal responses from text, creating a complete communication loop.
+                    </p>
+                </div>
+                <div className="bg-blue-700 bg-opacity-60 p-6 rounded-lg shadow-inner border border-blue-600 md:col-span-2">
+                    <h3 className="text-2xl font-cinzel text-yellow-300 mb-2">Offline Accessibility</h3>
+                    <p className="text-gray-200">
+                        Provides reliable communication in any environment, ensuring the
+                        'bridge' is always available, even without internet access.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        {/* Promoting Inclusion Section */}
+        <section className="w-full max-w-4xl bg-blue-900 bg-opacity-80 rounded-xl shadow-2xl p-8 border-2 border-yellow-700 mt-12 animate-fade-in">
+            <h2 className="text-3xl font-cinzel text-yellow-300 text-center mb-6">
+                <i className="fas fa-users-magic mr-3"></i> PROMOTING INCLUSION
+            </h2>
+            <p className="text-lg text-gray-200 leading-relaxed text-center">
+                SensiTalk is committed to fostering a more inclusive world where every voice, spoken or unspoken, is heard and understood.
+            </p>
+        </section>
+
+        {/* Available Now & Future Features Section */}
+        <section className="w-full max-w-4xl bg-blue-900 bg-opacity-80 rounded-xl shadow-2xl p-8 border-2 border-yellow-700 mt-12 animate-fade-in">
+            <h2 className="text-3xl font-cinzel text-yellow-300 text-center mb-6">
+                <i className="fas fa-wand-magic mr-3"></i> AVAILABLE NOW & FUTURE MAGIC
+            </h2>
+            <div className="grid md:grid-cols-2 gap-8">
+                <div className="bg-blue-700 bg-opacity-60 p-6 rounded-lg shadow-inner border border-blue-600">
+                    <h3 className="text-2xl font-cinzel text-yellow-300 mb-2">Available Now</h3>
+                    <ul className="list-disc list-inside text-gray-200 space-y-2">
+                        <li>Gesture to Speech: Real-time camera feed with simulated gesture recognition and character voice output.</li>
+                        <li>Speech to Text:Live voice transcription for deaf individuals.</li>
+                    </ul>
+                </div>
+                <div className="bg-blue-700 bg-opacity-60 p-6 rounded-lg shadow-inner border border-blue-600">
+                    <h3 className="text-2xl font-cinzel text-yellow-300 mb-2">Future Features</h3>
+                    <ul className="list-disc list-inside text-gray-200 space-y-2">
+                        <li>Advanced AI model integration for highly accurate gesture recognition.</li>
+                        <li>Customizable character voice profiles for personalized experiences.</li>
+                        <li>Multi-language support for both gesture and speech.</li>
+                        <li>Integration with smart devices for seamless communication.</li>
+                        <li>Interactive learning modules for sign language and non-verbal cues.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        {/* Main App Content - Gesture/Speech Tabs */}
+        <main className="w-full max-w-4xl bg-blue-900 bg-opacity-80 rounded-xl shadow-2xl p-8 border-2 border-yellow-700 mt-12 animate-fade-in">
+          <div className="flex justify-center mb-8 p-2 bg-blue-800 bg-opacity-70 rounded-full shadow-lg space-x-4">
+            <button
+              onClick={() => setActiveTab('gestureToSpeech')}
+              className={`px-6 py-3 rounded-full text-lg font-semibold transition-all duration-300 ease-in-out ${
+                activeTab === 'gestureToSpeech'
+                  ? 'bg-yellow-500 text-blue-950 shadow-md transform scale-105'
+                  : 'bg-blue-700 text-gray-200 hover:bg-blue-600 hover:text-white'
+              }`}
+            >
+              <i className="fas fa-hand-sparkles mr-2"></i> Gesture to Speech
+            </button>
+            <button
+              onClick={() => setActiveTab('speechToText')}
+              className={`px-6 py-3 rounded-full text-lg font-semibold transition-all duration-300 ease-in-out ${
+                activeTab === 'speechToText'
+                  ? 'bg-yellow-500 text-blue-950 shadow-md transform scale-105'
+                  : 'bg-blue-700 text-gray-200 hover:bg-blue-600 hover:text-white'
+              }`}
+            >
+              <i className="fas fa-microphone-alt mr-2"></i> Speech to Text
+            </button>
+          </div>
+          {activeTab === 'gestureToSpeech' ? <GestureToSpeech /> : <SpeechToText />}
+        </main>
+
+        {/* Connect with the Magic Section (Contact Form Placeholder) */}
+        <section id="contact" className="w-full max-w-4xl bg-blue-900 bg-opacity-80 rounded-xl shadow-2xl p-8 border-2 border-yellow-700 mt-12 animate-fade-in">
+            <h2 className="text-3xl font-cinzel text-yellow-300 text-center mb-6">
+                <i className="fas fa-magic mr-3"></i> CONNECT WITH THE MAGIC
+            </h2>
+            <div className="space-y-6">
+                <div>
+                    <label htmlFor="your-name" className="block text-gray-200 text-lg font-semibold mb-2">
+                        YOUR NAME
+                    </label>
+                    <input
+                        type="text"
+                        id="your-name"
+                        className="w-full p-3 bg-gray-800 text-white rounded-lg border border-blue-600 focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                        placeholder="Enter your name"
+                    />
+                </div>
+                <div>
+                    <label htmlFor="your-email" className="block text-gray-200 text-lg font-semibold mb-2">
+                        YOUR OWL POST (EMAIL)
+                    </label>
+                    <input
+                        type="email"
+                        id="your-email"
+                        className="w-full p-3 bg-gray-800 text-white rounded-lg border border-blue-600 focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                        placeholder="Enter your email"
+                    />
+                </div>
+                <div>
+                    <label htmlFor="your-message" className="block text-gray-200 text-lg font-semibold mb-2">
+                        YOUR ENCHANTED MESSAGE
+                    </label>
+                    <textarea
+                        id="your-message"
+                        rows="5"
+                        className="w-full p-3 bg-gray-800 text-white rounded-lg border border-blue-600 focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-y"
+                        placeholder="Type your message here..."
+                    ></textarea>
+                </div>
+                <button className="magic-button w-full">
+                    SEND MESSAGE
+                </button>
+            </div>
+        </section>
+
+        <footer className="mt-12 text-center text-gray-400 text-sm">
+            &copy; {new Date().getFullYear()} SensiTalk. All rights reserved. Inspired by the Wizarding World.
+        </footer>
+      </div> {/* End Content wrapper */}
+
+      {/* Font Awesome for icons */}
+      <script src="https://kit.fontawesome.com/a076d05399.js" crossOrigin="anonymous"></script>
+
+      {/* Animations */}
+      <style>
+        {`
+        @keyframes fadeInDown {
+          from { opacity: 0; transform: translateY(-20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scaleIn {
+          from { opacity: 0; transform: scale(0.9); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        .animate-fade-in-down { animation: fadeInDown 1s ease-out forwards; }
+        .animate-fade-in-up { animation: fadeInUp 1s ease-out forwards; animation-delay: 0.3s; }
+        .animate-scale-in { animation: scaleIn 0.8s ease-out forwards; animation-delay: 0.6s; }
+        .animate-fade-in { animation: fadeIn 1s ease-out forwards; animation-delay: 0.9s; }
+
+        .magic-button {
+          @apply px-6 py-3 rounded-full bg-yellow-600 text-blue-950 font-bold text-lg shadow-lg transform transition-all duration-300 ease-in-out hover:scale-105 hover:bg-yellow-500 active:scale-95 active:shadow-inner focus:outline-none focus:ring-4 focus:ring-yellow-400 focus:ring-opacity-75;
+        }
+        .custom-select {
+          background-image: url('data:image/svg+xml;utf8,<svg fill="%23e5e7eb" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+          background-repeat: no-repeat;
+          background-position: right 0.7em top 50%;
+          background-size: 1.2em auto;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+// Helper function to convert base64 to ArrayBuffer
+function base64ToArrayBuffer(base64) {
+    const binaryString = window.atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
+}
+
+// Helper function to convert PCM audio to WAV Blob
+function pcmToWav(pcmData, sampleRate) {
+    const numChannels = 1; // Assuming mono audio from the API
+    const bytesPerSample = 2; // L16 means 16-bit PCM, so 2 bytes per sample
+
+    const dataLength = pcmData.length * bytesPerSample;
+    const buffer = new ArrayBuffer(44 + dataLength);
+    const view = new DataView(buffer);
+
+    // RIFF chunk descriptor
+    writeString(view, 0, 'RIFF');
+    view.setUint32(4, 36 + dataLength, true); // file size
+    writeString(view, 8, 'WAVE');
+
+    // FMT sub-chunk
+    writeString(view, 12, 'fmt ');
+    view.setUint32(16, 16, true); // sub-chunk size
+    view.setUint16(20, 1, true); // audio format (1 = PCM)
+    view.setUint16(22, numChannels, true); // number of channels
+    view.setUint32(24, sampleRate, true); // sample rate
+    view.setUint32(28, sampleRate * numChannels * bytesPerSample, true); // byte rate
+    view.setUint16(32, numChannels * bytesPerSample, true); // block align
+    view.setUint16(34, bytesPerSample * 8, true); // bits per sample
+
+    // DATA sub-chunk
+    writeString(view, 36, 'data');
+    view.setUint32(40, dataLength, true); // data size
+
+    // Write PCM data
+    let offset = 44;
+    for (let i = 0; i < pcmData.length; i++) {
+        view.setInt16(offset, pcmData[i], true); // Write 16-bit sample
+        offset += bytesPerSample;
+    }
+
+    return new Blob([view], { type: 'audio/wav' });
+}
+
+function writeString(view, offset, string) {
+    for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+    }
+}
+
+
+// Gesture to Speech Component
+const GestureToSpeech = () => {
+  const [recognizedText, setRecognizedText] = useState('');
+  const [selectedCharacter, setSelectedCharacter] = useState('default'); // Changed to selectedCharacter
+  const [speaking, setSpeaking] = useState(false);
+  const [message, setMessage] = useState(''); // For custom messages
+  const videoRef = useRef(null); // Ref for the video element
+  const streamRef = useRef(null); // Ref to hold the media stream
+  const audioPlayerRef = useRef(null); // Ref for the audio player
+
+  // Character voice mapping and style prompts
+  // NOTE: stylePrompt is now purely for internal reference/future use, not prepended to text
+  const characterVoiceMap = {
+      'default': { voiceName: 'Zephyr', stylePrompt: '' }, // Default for general tone
+      'Harry': { voiceName: 'Zephyr', stylePrompt: 'Say bravely and with determination: ' },
+      'Hermione': { voiceName: 'Puck', stylePrompt: 'Say clearly and intelligently: ' },
+      'Ron': { voiceName: 'Leda', stylePrompt: 'Say casually and with a hint of humor: ' },
+      'Dumbledore': { voiceName: 'Charon', stylePrompt: 'Say wisely and calmly: ' },
+      'Snape': { voiceName: 'Fenrir', stylePrompt: 'Say sternly and with a deep, resonant tone: ' },
+      'McGonagall': { voiceName: 'Kore', stylePrompt: 'Say firmly and authoritatively: ' },
+      'Hagrid': { voiceName: 'Algenib', stylePrompt: 'Say warmly and with a slight gruffness: ' }
+  };
+
+  // Character voice options for dropdown
+  const characterOptions = Object.keys(characterVoiceMap).map(key => ({
+    value: key,
+    name: key === 'default' ? 'Default Voice' : key // Display 'Default Voice' for 'default' key
+  }));
+
+
+  // Function to start camera feed
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      streamRef.current = stream; // Store the stream
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        setMessage('Camera feed active. Position your hand for a gesture!');
+      }
+    } catch (err) {
+      console.error('Error accessing camera:', err);
+      setMessage('Error: Could not access camera. Please ensure permissions are granted.');
+    }
+  };
+
+  // Function to stop camera feed
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
+      }
+      setMessage('Camera feed stopped.');
+    }
+  };
+
+  // Function to simulate gesture recognition from a captured frame
+  const captureAndPredictGesture = () => {
+    if (!streamRef.current) {
+      setMessage('Please start the camera first to capture a gesture.');
+      return;
+    }
+
+    // In a real app, you'd capture a frame from videoRef.current
+    // and send it to a server-side ML model for prediction.
+    // For this demo, we'll simulate a random prediction.
+    const possibleGestures = [
+      "Hello, my name is [Your Name]",
+      "Good Morning!",
+      "Happy Birthday!",
+      "Thank You!",
+      "I love you!",
+      "Please help me."
+    ];
+    const randomIndex = Math.floor(Math.random() * possibleGestures.length);
+    const predictedPhrase = possibleGestures[randomIndex];
+    setRecognizedText(predictedPhrase);
+    setMessage(`Gesture recognized: "${predictedPhrase}"`);
+  };
+
+  // Function to speak the text using Gemini API
+  const speakText = async () => { // Removed textToSpeakOverride parameter
+    const textToUse = recognizedText; // Always use recognizedText
+
+    if (!textToUse) {
+      setMessage("Please recognize a gesture or type text first!");
+      return;
+    }
+
+    if (speaking) {
+      // If currently speaking, stop it
+      if (audioPlayerRef.current) {
+        audioPlayerRef.current.pause();
+        audioPlayerRef.current.currentTime = 0;
+      }
+      setSpeaking(false);
+      setMessage('Speech stopped.');
+      return;
+    }
+
+    setSpeaking(true);
+    setMessage('Casting spell (generating audio)...');
+    if (audioPlayerRef.current) {
+        audioPlayerRef.current.classList.add('hidden'); // Hide player during new generation
+    }
+
+    const voiceConfig = characterVoiceMap[selectedCharacter] || characterVoiceMap['default'];
+    // IMPORTANT FIX: Ensure only the actual text is sent to the API
+    const textContent = textToUse;
+
+    let retryCount = 0;
+    const maxRetries = 3;
+    const baseDelay = 1000; // 1 second
+
+    while (retryCount < maxRetries) {
+        try {
+            const payload = {
+                contents: [{
+                    parts: [{ text: textContent }] // Use textContent directly
+                }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: {
+                            prebuiltVoiceConfig: { voiceName: voiceConfig.voiceName }
+                        }
+                    }
+                },
+                model: "gemini-2.5-flash-preview-tts"
+            };
+
+            console.log("Sending payload to Gemini TTS API:", JSON.stringify(payload, null, 2));
+
+            const apiKey = ""; // Canvas environment provides this
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            console.log("Received raw API response:", response);
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('API Error:', response.status, errorData);
+                throw new Error(`API request failed with status ${response.status}: ${errorData.error.message}`);
+            }
+
+            const result = await response.json();
+            console.log("Parsed API result:", result);
+
+            const part = result?.candidates?.[0]?.content?.parts?.[0];
+            const audioData = part?.inlineData?.data;
+            const mimeType = part?.inlineData?.mimeType;
+
+            console.log("Audio Data received:", audioData ? `Yes, length: ${audioData.length}` : "No");
+            console.log("MIME Type received:", mimeType);
+
+            if (audioData && mimeType && mimeType.startsWith("audio/L16")) {
+                const sampleRateMatch = mimeType.match(/rate=(\d+)/);
+                const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 16000; // Default or extract from mimetype
+                console.log("Detected Sample Rate:", sampleRate);
+
+                const pcmDataBuffer = base64ToArrayBuffer(audioData);
+                const pcm16 = new Int16Array(pcmDataBuffer);
+                const wavBlob = pcmToWav(pcm16, sampleRate);
+                const audioUrl = URL.createObjectURL(wavBlob);
+
+                if (audioPlayerRef.current) {
+                    audioPlayerRef.current.src = audioUrl;
+                    audioPlayerRef.current.classList.remove('hidden'); // Show audio player
+                    audioPlayerRef.current.play();
+                    audioPlayerRef.current.onended = () => {
+                        setSpeaking(false);
+                        setMessage('Spell cast successfully!'); // Message on successful completion
+                    };
+                    audioPlayerRef.current.onerror = (e) => {
+                        console.error('Audio playback error:', e);
+                        setSpeaking(false);
+                        setMessage('Error playing audio. The magical sound wave got disrupted!');
+                    };
+                }
+                // Removed the success message here to avoid immediate overwrite
+                // The onended callback now handles the success message
+                break; // Exit loop on success
+            } else {
+                setMessage('Failed to generate audio. Invalid response from the magical realm or unexpected audio format.');
+                setSpeaking(false);
+                break; // Exit loop on failure
+            }
+        } catch (error) {
+            console.error('Error generating speech:', error);
+            retryCount++;
+            setMessage(`Failed to cast spell. Retrying (${retryCount}/${maxRetries})...`);
+            console.log(`Retry attempt ${retryCount} for speech generation.`);
+            await new Promise(res => setTimeout(res, baseDelay * Math.pow(2, retryCount - 1))); // Exponential backoff
+        }
+    }
+
+    if (retryCount === maxRetries) {
+        setMessage('Failed to generate speech after multiple attempts. Please try again later.');
+        setSpeaking(false);
+    }
+  };
+
+  useEffect(() => {
+    startCamera(); // Start camera automatically when component mounts
+
+    // Cleanup: stop camera when component unmounts
+    return () => {
+      stopCamera();
+      if (audioPlayerRef.current) {
+        audioPlayerRef.current.pause();
+        audioPlayerRef.current.currentTime = 0;
+      }
+    };
+  }, []); // Empty dependency array means this runs once on mount and cleanup on unmount
+
+  return (
+    <div className="space-y-6">
+      <h2 className="text-3xl font-cinzel text-yellow-300 text-center mb-6">
+        <i className="fas fa-hand-sparkles mr-3"></i> Gesture to Speech
+      </h2>
+
+      <div className="bg-blue-800 bg-opacity-60 p-6 rounded-lg shadow-inner border border-yellow-600">
+        <p className="text-lg text-gray-200 mb-4">
+          <i className="fas fa-info-circle mr-2"></i> This section uses your camera to capture hand gestures.
+          Click "Capture Gesture & Predict" to see a simulated recognition.
+        </p>
+        <div className="w-full h-64 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 text-xl border-2 border-dashed border-blue-600 mb-6 overflow-hidden">
+          <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover rounded-lg"></video>
+          {!streamRef.current && (
+            <div className="absolute flex flex-col items-center justify-center w-full h-full">
+              <i className="fas fa-video-slash text-5xl mb-2"></i>
+              <p>Camera not active or permissions denied.</p>
+            </div>
+          )}
+        </div>
+        <div className="flex flex-wrap justify-center gap-4 mb-6">
+          <button
+            onClick={captureAndPredictGesture}
+            className="magic-button"
+          >
+            <i className="fas fa-camera mr-2"></i> Capture Gesture & Predict
+          </button>
+        </div>
+        {message && (
+          <p className="text-center text-yellow-400 text-md mt-2 animate-fade-in">{message}</p>
+        )}
+      </div>
+
+      <div className="bg-blue-800 bg-opacity-60 p-6 rounded-lg shadow-inner border border-yellow-600 space-y-4">
+        <h3 className="text-2xl font-cinzel text-yellow-300 mb-4">Recognized Text:</h3>
+        <textarea
+          className="w-full h-32 p-4 bg-gray-800 text-white rounded-lg border border-blue-600 focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-y"
+          value={recognizedText}
+          onChange={(e) => setRecognizedText(e.target.value)}
+          placeholder="Predicted gesture text will appear here, or type your own..."
+        ></textarea>
+
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1">
+            <label htmlFor="character-select" className="block text-gray-200 text-lg font-semibold mb-2">
+              <i className="fas fa-hat-wizard mr-2"></i> Choose Character Voice:
+            </label>
+            <select
+              id="character-select"
+              value={selectedCharacter}
+              onChange={(e) => setSelectedCharacter(e.target.value)}
+              className="w-full p-3 bg-gray-800 text-white rounded-lg border border-blue-600 focus:ring-2 focus:ring-yellow-500 focus:border-transparent appearance-none custom-select"
+            >
+              {characterOptions.map((char) => (
+                <option key={char.value} value={char.value}>
+                  {char.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div className="flex justify-center mt-4">
+            <button
+                onClick={() => speakText()}
+                className={`magic-button w-full ${speaking ? 'bg-red-600 hover:bg-red-700' : ''}`}
+                disabled={!recognizedText && !speaking}
+            >
+                {speaking ? (
+                    <>
+                    <i className="fas fa-stop-circle mr-2"></i> Stop Speaking
+                    </>
+                ) : (
+                    <>
+                    <i className="fas fa-volume-up mr-2"></i> Speak Text
+                    </>
+                )}
+            </button>
+        </div>
+        <audio ref={audioPlayerRef} controls className="w-full mt-4"></audio>
+      </div>
+
+      {/* Custom select arrow styling */}
+      <style>{`
+        .custom-select {
+          background-image: url('data:image/svg+xml;utf8,<svg fill="%23e5e7eb" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+          background-repeat: no-repeat;
+          background-position: right 0.7em top 50%;
+          background-size: 1.2em auto;
+        }
+        .magic-button {
+          @apply px-6 py-3 rounded-full bg-yellow-600 text-blue-950 font-bold text-lg shadow-lg transform transition-all duration-300 ease-in-out hover:scale-105 hover:bg-yellow-500 active:scale-95 active:shadow-inner focus:outline-none focus:ring-4 focus:ring-yellow-400 focus:ring-opacity-75;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+// Speech to Text Component
+const SpeechToText = () => {
+  const [transcript, setTranscript] = useState('');
+  const [currentInterimTranscript, setCurrentInterimTranscript] = useState(''); // New state for interim results
+  const [isListening, setIsListening] = useState(false);
+  const [message, setMessage] = useState(''); // For custom messages
+  const recognitionRef = useRef(null);
+
+  useEffect(() => {
+    // Check for Web Speech API compatibility
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = true; // Keep listening
+      recognitionRef.current.interimResults = true; // Show interim results
+
+      recognitionRef.current.onresult = (event) => {
+        let finalTranscript = '';
+        let interimTranscript = '';
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          const transcriptPart = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcriptPart;
+          } else {
+            interimTranscript += transcriptPart;
+          }
+        }
+        // Append final transcript to the main state
+        setTranscript(prev => prev + finalTranscript);
+        // Update interim transcript for real-time display
+        setCurrentInterimTranscript(interimTranscript);
+      };
+
+      recognitionRef.current.onerror = (event) => {
+        console.error('Speech recognition error:', event);
+        setIsListening(false);
+        setMessage(`Speech recognition error: ${event.error}. Please ensure microphone access is granted.`);
+      };
+
+      recognitionRef.current.onend = () => {
+        if (isListening) { // If it ended but we still want to listen, restart
+          setIsListening(false); // Set to false temporarily to allow restart
+          startListening();
+        } else {
+          setMessage('Speech recognition stopped.');
+        }
+      };
+    } else {
+      setMessage("Your browser does not support Web Speech API. Please use Chrome or Edge for this feature.");
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
+  }, []); // Empty dependency array means this runs once on mount
+
+  const startListening = () => {
+    if (recognitionRef.current) {
+      setTranscript(''); // Clear previous transcript
+      setCurrentInterimTranscript(''); // Clear interim transcript
+      setMessage(''); // Clear previous message
+      try {
+        recognitionRef.current.start();
+        setIsListening(true);
+        setMessage('Listening for your voice...');
+      } catch (e) {
+        console.error("Error starting speech recognition:", e);
+        setMessage("Could not start speech recognition. Please ensure microphone access is granted and not in use by another app.");
+        setIsListening(false);
+      }
+    }
+  };
+
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+      setMessage('Speech recognition stopped.');
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <h2 className="text-3xl font-cinzel text-yellow-300 text-center mb-6">
+        <i className="fas fa-microphone-alt mr-3"></i> Speech to Text
+      </h2>
+
+      <div className="bg-blue-800 bg-opacity-60 p-6 rounded-lg shadow-inner border border-yellow-600">
+        <p className="text-lg text-gray-200 mb-4">
+          <i className="fas fa-info-circle mr-2"></i> This section allows you to speak, and your words will be
+          transcribed into text in real-time.
+        </p>
+        <div className="flex justify-center gap-4 mb-6">
+          <button
+            onClick={startListening}
+            disabled={isListening}
+            className={`magic-button ${isListening ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            <i className="fas fa-play-circle mr-2"></i> Start Recording
+          </button>
+          <button
+            onClick={stopListening}
+            disabled={!isListening}
+            className={`magic-button bg-red-600 hover:bg-red-700 ${!isListening ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            <i className="fas fa-stop-circle mr-2"></i> Stop Recording
+          </button>
+        </div>
+        {message && (
+          <p className="text-center text-yellow-400 text-md mt-2 animate-fade-in">{message}</p>
+        )}
+      </div>
+
+      <div className="bg-blue-800 bg-opacity-60 p-6 rounded-lg shadow-inner border border-yellow-600 space-y-4">
+        <h3 className="text-2xl font-cinzel text-yellow-300 mb-4">Transcribed Text:</h3>
+        <textarea
+          className="w-full h-48 p-4 bg-gray-800 text-white rounded-lg border border-blue-600 focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-y"
+          value={transcript + currentInterimTranscript} // Display both final and current interim
+          readOnly
+          placeholder={isListening ? "Listening..." : "Click 'Start Recording' to begin transcription."}
+        ></textarea>
+        {isListening && (
+          <p className="text-center text-yellow-400 text-lg animate-pulse">
+            <i className="fas fa-circle-notch fa-spin mr-2"></i> Listening for your voice...
+          </p>
+        )}
+      </div>
+
+      {/* Custom button styling */}
+      <style>{`
+        .magic-button {
+          @apply px-6 py-3 rounded-full bg-yellow-600 text-blue-950 font-bold text-lg shadow-lg transform transition-all duration-300 ease-in-out hover:scale-105 hover:bg-yellow-500 active:scale-95 active:shadow-inner focus:outline-none focus:ring-4 focus:ring-yellow-400 focus:ring-opacity-75;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default App;
